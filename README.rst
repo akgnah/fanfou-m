@@ -36,7 +36,6 @@ Demo 效果可点这里 http://m.setq.me 查看。
 
 运行
 ----
-代码在 Python 2.7 中测试通过
 
 初次运行时需要把 consumer 添加进数据库
 
