@@ -1,0 +1,52 @@
+$def with (me, data, notice)
+
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//WAPFORUM//DTD XHTML Mobile 1.0//EN" "http://www.wapforum.org/DTD/xhtml-mobile10.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title> 饭否 | 随便看看</title>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<link rel="stylesheet" href="/static/m.css" type="text/css" media="screen" charset="utf-8" /></head>
+<body>
+<h1><a href="/home?v=$int(time.time())"><img src="/static/fanfou.gif" alt="饭否" /></a></h1>
+$if notice['direct_messages']:
+    <p class="n"><a href="/privatemsg">你有 $notice['direct_messages'] 条新私信</a></p>
+<h2><a href="/browse?v=$int(time.time())">随便看看</a>其他人在做什么…</h2>
+$for item in data:
+    <p>
+    <a href="/$item['user']['id']" class="p">
+    $item['user']['name']</a> $:item['text'].replace('http://fanfou.com', '')
+    $if item.get('photo'): <a href="/photo.normal/$utils.get_msg_id(item)" alt="[图]" class="photo $utils.gif(item)"><img src="$item['photo']['thumburl']" /></a>
+    <br/><span class="t">$utils.format_time(item['created_at'])&nbsp;通过$utils.get_source(item['source'])</span>
+    $if item.get('repost_status_id'):
+        <span class="a">&nbsp;<a href="/statuses/$item['repost_status_id']">>></a>&nbsp;</span>
+    $if item.get('in_reply_to_status_id'):
+        <span class="a">&nbsp;<a href="/statuses/$item['in_reply_to_status_id']">>></a>&nbsp;</span>
+    $if item['user']['id'] == me['id']:
+        <span class="a"><a href="/msg.del/$item['id']">删除</a></span>
+    $else:
+        <span class="a"><a href="/msg.reply/$item['id']">回复</a></span>
+    <span class="a"><a href="/msg.forward/$item['id']">转发</a></span>
+    $if item['favorited']:
+        <span class="a"><a href="/msg.favorite.del/$item['id']">取消</a></span>
+    $else:
+        <span class="a"><a href="/msg.favorite.add/$item['id']">收藏</a></span>
+    </p>
+<div id="nav">
+<p class="s">
+0<a href="/home" accesskey="0">首页</a>
+1<a href="/$me['id']" accesskey="1">空间</a>
+2<a href="/friends" accesskey="2">关注的人</a>
+7<a href="/settings" accesskey="7">设置</a>
+<br/>
+3<a href="/browse" accesskey="3">随便看看</a>
+8<a href="/photo.upload" accesskey="8">发照片</a>
+9<a href="/search" accesskey="9">搜索</a>
+</p>
+</div>
+<br/>
+<p><a href="/logout/$utils.nonce()">退出</a></p>
+<div id="ft">&copy; 2012 m.setq.me</div>
+<p>[$utils.now()]</p>
+</body>
+</html>

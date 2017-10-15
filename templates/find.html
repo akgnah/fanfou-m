@@ -1,0 +1,59 @@
+$def with (me, query, data, notice)
+
+$code:
+    def count(s):
+        return '100多' if s > 100 else s
+
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//WAPFORUM//DTD XHTML Mobile 1.0//EN" "http://www.wapforum.org/DTD/xhtml-mobile10.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title> 饭否 | 饭否搜索</title>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<link rel="stylesheet" href="/static/m.css" type="text/css" media="screen" charset="utf-8" /></head>
+<body>
+<h1><a href="/home?v=$int(time.time())"><img src="/static/fanfou.gif" alt="饭否" /></a></h1>
+$if notice['direct_messages']:
+    <p class="n"><a href="/privatemsg">你有 $notice['direct_messages'] 条新私信</a></p>
+<h2>饭否搜索</h2>
+<form method="get" action="/search">
+<p><input type="text" class="i" name="q" value="$query['q']" /></p>
+<p><input type="radio" name="st" value="0" /> 全站消息
+<input type="radio" name="st" value="1" /> 我的消息
+<input type="radio" name="st" value="2" checked="checked" /> 用户名</p>
+<p><input type="submit" value="搜索" /></p>
+</form>
+<h2>找到了 $count(data['total_number']) 个和 $query['q'] 相关的人！</h2>	
+$for item in data['users']:
+    <p class="search">
+    <a href="/$item['id']" title="$item['name']" target="_blank"><img src="$item['profile_image_url']" alt="$item['name']" /></a>
+	<a href="/$item['id']" target="_blank">$item['name']</a></dt><br/>
+    饭否空间：http://m.fanfou.com/<strong>$item['id']</strong><br/>
+    $if item.get('url', ''): 个人网址：$item['url']<br/>
+    $if item.get('status'): $:item['status']['text']<br/>
+    </p>
+<p>
+$if query.get('more'):
+    6<a href="/search?q=$query['q']&t=1&st=$query['st']&p=$(int(query['p'])+1)" accesskey="6">下页</a>
+    $if int(query.get('p')) > 1: |
+$if int(query.get('p')) > 1:
+    <a href="/search?q=$query['q']&t=0&st=$query['st']&p=$(int(query['p'])-1)" accesskey="4">上页</a>4
+</p>
+<div id="nav">
+<p class="s">
+0<a href="/home" accesskey="0">首页</a>
+1<a href="/$me['id']" accesskey="1">空间</a>
+2<a href="/friends" accesskey="2">关注的人</a>
+7<a href="/settings" accesskey="7">设置</a>
+<br/>
+3<a href="/browse" accesskey="3">随便看看</a>
+8<a href="/photo.upload" accesskey="8">发照片</a>
+9<a href="/search" accesskey="9">搜索</a>
+</p>
+</div>
+<br/>
+<p><a href="/logout/$utils.nonce()">退出</a></p>
+<div id="ft">&copy; 2012 m.setq.me</div>
+<p>[$utils.now()]</p>
+</body>
+</html>

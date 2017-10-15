@@ -1,0 +1,34 @@
+$def with (me, user)
+
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//WAPFORUM//DTD XHTML Mobile 1.0//EN" "http://www.wapforum.org/DTD/xhtml-mobile10.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title> 饭否 | 给$user['name']留言</title>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<link rel="stylesheet" href="/static/m.css" type="text/css" media="screen" charset="utf-8" /></head>
+<body>
+<h1><a href="/home?v=$int(time.time())"><img src="/static/fanfou.gif" alt="饭否" /></a></h1>
+<h2>给$user['name']留言</h2>
+<form method="post" action="/msg.new/$user['id']">
+<p><textarea maxlength="140" name="content" class="i" rows="3">@$user['name'] </textarea></p>
+<p><input type="submit" value="发送" /></p>
+</form>
+<div id="nav">
+<p class="s">
+0<a href="/home" accesskey="0">首页</a>
+1<a href="/$me['id']" accesskey="1">空间</a>
+2<a href="/friends" accesskey="2">关注的人</a>
+7<a href="/settings" accesskey="7">设置</a>
+<br/>
+3<a href="/browse" accesskey="3">随便看看</a>
+8<a href="/photo.upload" accesskey="8">发照片</a>
+9<a href="/search" accesskey="9">搜索</a>
+</p>
+</div>
+<br/>
+<p><a href="/logout/$utils.nonce()">退出</a></p>
+<div id="ft">&copy; 2012 m.setq.me</div>
+<p>[$utils.now()]</p>
+</body>
+</html>

@@ -1,0 +1,40 @@
+$def with (me, notice)
+
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//WAPFORUM//DTD XHTML Mobile 1.0//EN" "http://www.wapforum.org/DTD/xhtml-mobile10.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title> 饭否 | 发照片</title>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<link rel="stylesheet" href="/static/m.css" type="text/css" media="screen" charset="utf-8" /></head>
+<body>
+<h1><a href="/home?v=$int(time.time())"><img src="/static/fanfou.gif" alt="饭否" /></a></h1>
+$if notice['direct_messages']:
+    <p class="n"><a href="/privatemsg">你有 $notice['direct_messages'] 条新私信</a></p>
+<h2>发照片</h2>
+$if notice.get('action'):
+    <p class="n">$notice['action']</p>
+<p>建议照片大小不超过500K。照片文件名不要包含中文。如果照片太大，建议压缩后再上传或者将照片以彩信的形式发送到 m@fanfou.com 完成上传。</p>
+<form method="post" action="/photo.upload" enctype="multipart/form-data">
+<p>1.选择照片：<input type="file" name="photo" size="20" /></p>
+<p>2.填写描述：<textarea maxlength="140" name="desc" rows="3" class="i"></textarea></p>
+<p><input type="submit" value="确定" /></p>
+</form>
+<div id="nav">
+<p class="s">
+0<a href="/home" accesskey="0">首页</a>
+1<a href="/$me['id']" accesskey="1">空间</a>
+2<a href="/friends" accesskey="2">关注的人</a>
+7<a href="/settings" accesskey="7">设置</a>
+<br/>
+3<a href="/browse" accesskey="3">随便看看</a>
+8<a href="/photo.upload" accesskey="8">发照片</a>
+9<a href="/search" accesskey="9">搜索</a>
+</p>
+</div>
+<br/>
+<p><a href="/logout/$utils.nonce()">退出</a></p>
+<div id="ft">&copy; 2012 m.setq.me</div>
+<p>[$utils.now()]</p>
+</body>
+</html>

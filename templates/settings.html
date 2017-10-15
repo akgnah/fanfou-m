@@ -1,0 +1,41 @@
+$def with (me, data, blacklist, tail, notice)
+
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//WAPFORUM//DTD XHTML Mobile 1.0//EN" "http://www.wapforum.org/DTD/xhtml-mobile10.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title> 饭否 | 设置</title>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<link rel="stylesheet" href="/static/m.css" type="text/css" media="screen" charset="utf-8" /></head>
+<body>
+<h1><a href="/home?v=$int(time.time())"><img src="/static/fanfou.gif" alt="饭否" /></a></h1>
+$if notice.get('action'):
+    <p class="n">$notice['action']</p>
+<form method="post" action="/settings" enctype="multipart/form-data">
+<p><img src="$data['profile_image_url_large']" /></p>
+<p>昵称：<br/><input name="name" type="text" class="i" value="$me['name']" maxlength="12" /></p>
+<p>自述：<br/><textarea maxlength="140" class="i" name="bio" rows="4">$data['description']</textarea></p>
+<p>屏蔽，请以;分隔：<br/><textarea maxlength="140" class="i" name="blacklist" rows="4">$blacklist</textarea></p>
+<p>头像：<input type="file" name="image" size="20" /></p>
+<p><input type="submit" value="保存" /></p>
+</form>
+<p>小尾巴：$tail | <a href="/authorize?m=:-)" class="p">更改小尾巴</a> | <a href="/share_confirm" class="p">分享小尾巴</a></p>
+<div id="nav">
+<p class="s">
+0<a href="/home" accesskey="0">首页</a>
+1<a href="/$me['id']" accesskey="1">空间</a>
+2<a href="/friends" accesskey="2">关注的人</a>
+7<a href="/settings" accesskey="7">设置</a>
+<br/>
+3<a href="/browse" accesskey="3">随便看看</a>
+8<a href="/photo.upload" accesskey="8">发照片</a>
+9<a href="/search" accesskey="9">搜索</a>
+</p>
+</div>
+<br/>
+<p>
+<a href="/autologin.confirm">存为书签</a> | <a href="/logout/$utils.nonce()">退出</a></p>
+<div id="ft">&copy; 2012 m.setq.me</div>
+<p>[$utils.now()]</p>
+</body>
+</html>

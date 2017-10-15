@@ -1,0 +1,50 @@
+$def with (me, data, page, notice)
+
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//WAPFORUM//DTD XHTML Mobile 1.0//EN" "http://www.wapforum.org/DTD/xhtml-mobile10.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title> 饭否 | 关注请求</title>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<link rel="stylesheet" href="/static/m.css" type="text/css" media="screen" charset="utf-8" /></head>
+<body>
+<h1><a href="/home?v=$int(time.time())"><img src="/static/fanfou.gif" alt="饭否" /></a></h1>
+$if notice['direct_messages']:
+    <p class="n"><a href="/privatemsg">你有 $notice['direct_messages'] 条新私信</a></p>
+<h2>$notice['friend_requests'] 个关注请求…</h2>
+<ol>
+$for item in data:
+    <li>
+    <a href="/$item['id']"><img src="$item['profile_image_url']" alt="$item['id']" /></a>
+    <a href="/$item['id']">$item['name']</a>
+    <span class="a">(
+    $if not item['following']: <a href="/friend.acceptadd/$item['id']">接受请求并关注他</a> | 
+    <a href="/friend.accept/$item['id']">接受请求</a> | 
+    <a href="/friend.deny/$item['id']">忽略请求</a>)</span>
+    </li>
+</ol>
+<p>
+$if page * 15 < notice['friend_requests']:
+    6<a href="/friend.request/p.$(page+1)" accesskey="6">下页</a>
+    $if page > 1: |
+$if page > 1:
+    <a href="/friend.request/p.$(page-1)" accesskey="4">上页</a>4
+</p>
+<div id="nav">
+<p class="s">
+0<a href="/home" accesskey="0">首页</a>
+1<a href="/$me['id']" accesskey="1">空间</a>
+2<a href="/friends" accesskey="2">关注的人</a>
+7<a href="/settings" accesskey="7">设置</a>
+<br/>
+3<a href="/browse" accesskey="3">随便看看</a>
+8<a href="/photo.upload" accesskey="8">发照片</a>
+9<a href="/search" accesskey="9">搜索</a>
+</p>
+</div>
+<br/>
+<p><a href="/logout/$utils.nonce()">退出</a></p>
+<div id="ft">&copy; 2012 m.setq.me</div>
+<p>[$utils.now()]</p>
+</body>
+</html>

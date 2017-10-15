@@ -1,0 +1,61 @@
+$def with (me, user, data, page, notice)
+
+$code:
+    def who():
+        return '我' if me['id'] == user['id'] else user['name']
+    def count():
+        count = user['friends_count']
+        if count < 51:
+            s = '共 %s 个' % count
+        else:
+            start = (page - 1) * 50 + 1
+            end = start + len(data) - 1
+            s = '第 %s-%s 个 / 共 %s 个' % (start, end, count)
+        return s
+
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//WAPFORUM//DTD XHTML Mobile 1.0//EN" "http://www.wapforum.org/DTD/xhtml-mobile10.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title> 饭否 | $who()关注的人</title>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<link rel="stylesheet" href="/static/m.css" type="text/css" media="screen" charset="utf-8" /></head>
+<body>
+<h1><a href="/home?v=$int(time.time())"><img src="/static/fanfou.gif" alt="饭否" /></a></h1>
+$if notice['direct_messages']:
+    <p class="n"><a href="/privatemsg">你有 $notice['direct_messages'] 条新私信</a></p>
+<h2>$who()关注的人 | <a href="/followers/$user['id']">关注$who()的人</a></h2>
+<p class="t">$count()</p>
+<p class="b"><a href="/$user['id']">返回$who()的空间</a></p>
+$if user['visible']:
+    <ol>
+    $for item in data:
+        <li><a href="/$item['id']">$item['name'] <span class="a">($item['id'])</span></a></li>
+    </ol>
+    <p>
+    $if  page * 50 < user['friends_count']:
+        6<a href="/friends/$user['id']/p.$(page+1)" accesskey="6">下页</a>
+        $if  page > 1: |
+    $if  page > 1:
+        <a href="/friends/$user['id']/p.$(page-1)" accesskey="4">上页</a>4
+    </p>
+$else:
+    <p>我只向关注我的人公开我的饭友，<a href="/friend.add/$user['id']">关注我</a>。</p>
+<div id="nav">
+<p class="s">
+0<a href="/home" accesskey="0">首页</a>
+1<a href="/$me['id']" accesskey="1">空间</a>
+2<a href="/friends" accesskey="2">关注的人</a>
+7<a href="/settings" accesskey="7">设置</a>
+<br/>
+3<a href="/browse" accesskey="3">随便看看</a>
+8<a href="/photo.upload" accesskey="8">发照片</a>
+9<a href="/search" accesskey="9">搜索</a>
+</p>
+</div>
+<br/>
+<p><a href="/logout/$utils.nonce()">退出</a></p>
+<div id="ft">&copy; 2012 m.setq.me</div>
+<p>[$utils.now()]</p>
+</body>
+</html>

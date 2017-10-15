@@ -1,0 +1,20 @@
+$def with (cid, code, host)
+
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//WAPFORUM//DTD XHTML Mobile 1.0//EN" "http://www.wapforum.org/DTD/xhtml-mobile10.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title> 饭否 | 分享 Consumer</title>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<link rel="stylesheet" href="/static/m.css" type="text/css" />
+</head>
+<body>
+$if code == 200:
+    <p>http://$host/share?cid=$cid</p>
+    <p>请将此地址分享给好友，Ta 即可使用你的小尾巴。<a href="/home">点击这里浏览首页</a>。</p>
+$elif code == 403:
+    <p>没有找到对应的 Consumer，请返回<a href="/authorize" class="p">认证页面</a>。</p>
+$else:
+    <p>Consumer 不正确，可能该 Consumer 拥有者进行了重置，请返回<a href="/authorize" class="p">认证页面</a>。</p>
+</body>
+</html>

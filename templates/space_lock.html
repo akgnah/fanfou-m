@@ -1,0 +1,51 @@
+$def with (me, user, notice)
+
+$code:
+    def gender():
+        sex = { u'男': '他', u'女': '她'}
+        return sex.get(user['gender'], '他')
+
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//WAPFORUM//DTD XHTML Mobile 1.0//EN" "http://www.wapforum.org/DTD/xhtml-mobile10.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title> 饭否 | $user['name']</title>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<link rel="stylesheet" href="/static/m.css" type="text/css" media="screen" charset="utf-8" /></head>
+<body>
+<h1><a href="/home?v=$int(time.time())"><img src="/static/fanfou.gif" alt="饭否" /></a></h1>
+$if notice['direct_messages']:
+    <p class="n"><a href="/privatemsg">你有 $notice['direct_messages'] 条新私信</a></p>
+$if notice.get('action'):
+    <p class="n">$notice['action']</p>
+<p><a href="/$user['id']"><img src="$user['profile_image_url_large']" alt="$user['id']" /></a></p>
+<p>我只向关注我的人公开我的消息，<a href="/friend.add/$user['id']">关注我</a>。</p>
+<h2>$user['name']的资料</h2>
+$if user['gender']: <p>性别：$user['gender']</p>
+$if user['birthday']: <p>生日：$utils.format_birthday(user['birthday'])</p>
+$if user['location']: <p>所在地：$user['location']</p>
+$if user['url']: <p>网站：<a href="$user['url']">$user['url']</a></p>
+$if user['description']: <p>自述：$:user['description'].replace('\n', '<br/>') </p>
+<p><a href="/friends/$user['id']">$gender()关注的人($user['friends_count'])</a><br/>
+<a href="/followers/$user['id']">关注$gender()的人($user['followers_count'])</a><br/>
+<a href="/$user['id']">消息($user['statuses_count'])</a><br/>
+<a href="/favorites/$user['id']">收藏($user['favourites_count'])</a><br/>
+<a href="/album/$user['id']">照片($user['photo_count'])</a><br/></p>
+<div id="nav">
+<p class="s">
+0<a href="/home" accesskey="0">首页</a>
+1<a href="/$me['id']" accesskey="1">空间</a>
+2<a href="/friends" accesskey="2">关注的人</a>
+7<a href="/settings" accesskey="7">设置</a>
+<br/>
+3<a href="/browse" accesskey="3">随便看看</a>
+8<a href="/photo.upload" accesskey="8">发照片</a>
+9<a href="/search" accesskey="9">搜索</a>
+</p>
+</div>
+<br/>
+<p><a href="/logout/$utils.nonce()">退出</a></p>
+<div id="ft">&copy; 2012 m.setq.me</div>
+<p>[$utils.now()]</p>
+</body>
+</html>

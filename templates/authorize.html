@@ -1,0 +1,27 @@
+$def with (notice)
+
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//WAPFORUM//DTD XHTML Mobile 1.0//EN" "http://www.wapforum.org/DTD/xhtml-mobile10.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title> 饭否 | 迷你博客 随时随地记录与分享</title>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<link rel="stylesheet" href="/static/m.css" type="text/css" media="screen" charset="utf-8" /></head>
+<body>
+<h1><a href="/home?v=$int(time.time())"><img src="/static/fanfou.gif" alt="饭否" /></a></h1>
+$if notice:
+    <p class="n">$notice</p>
+<form method="post" action="/authorize" >
+<p>
+<select name="cid">
+$for consumer in models.consumer.all():
+    <option value="$consumer['consumer_id']">$consumer['consumer_name']</option>
+</select>
+</p>
+<p><input type="submit" value="登录或验证" /></p>
+<p><a href="/authorize?m=:-)" class="p">填写 Consumer</a></p>
+</form>
+<div id="ft">&copy; 2012 m.setq.me</div>
+<p>[$utils.now()]</p>
+</body>
+</html>
