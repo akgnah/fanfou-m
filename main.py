@@ -60,8 +60,8 @@ class Utils:
         return s
 
     def replace_kw(self, s):
-        s = re.sub(r'<b>([^<]*)</b>', '<strong>\g<1></strong>', s)
-        return re.sub(r'(@<a href=")http[s]?://fanfou.com', '\g<1>', s)
+        s = re.sub(r'<b>([^<]*)</b>', r'<strong>\g<1></strong>', s)
+        return re.sub(r'(@<a href=")http[s]?://fanfou.com', r'\g<1>', s)
 
     def get_source(self, s):
         p = re.compile(r'<[^>]*>(.*?)</a>')
@@ -239,8 +239,7 @@ class Utils:
         return 'gif' if item['photo']['largeurl'][-3:].lower() == 'gif' else ''
 
     def notfound(self):
-        referer = web.ctx.env.get('HTTP_REFERER', web.ctx.home)
-        referer = referer.replace(web.ctx.home, '')
+        referer = web.ctx.env.get('HTTP_REFERER', '').replace(web.ctx.home, '')
         return web.notfound(render.unrealized(self.me, 404, referer, ''))
 
     def internalerror(self):
