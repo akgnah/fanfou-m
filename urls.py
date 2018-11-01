@@ -2,7 +2,6 @@
 # -*- coding: utf-8 -*-
 
 urls = (
-    '/favicon.ico', 'favicon_ico',
     '/friend.add/?([^/]*)/?', 'friend_add',
     '/friend.remove/?([^/]*)/?', 'friend_remove',
     '/friend.request/?', 'friend_request',

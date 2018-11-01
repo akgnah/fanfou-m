@@ -3,8 +3,8 @@ $def with (me, status)
 $code:
     def sub_mentions(text):
         text = utils.html_encode(text)
-        p = re.compile(r'<[^>]*>(.*?)</a>')
-        return p.sub(lambda m: m.groups()[0], text)
+        p = re.compile(r'<(\w)[^>]*>(.*?)</\1>')
+        return p.sub(lambda m: m.groups()[1], text)
 
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE html PUBLIC "-//WAPFORUM//DTD XHTML Mobile 1.0//EN" "http://www.wapforum.org/DTD/xhtml-mobile10.dtd">
@@ -12,6 +12,7 @@ $code:
 <head>
 <title> 饭否 | 转发</title>
 <meta name="viewport" content="width=device-width,initial-scale=1">
+<link href="/static/favicon.ico" rel="shortcut icon">
 <link rel="stylesheet" href="/static/m.css" type="text/css" media="screen" charset="utf-8" /></head>
 <body>
 <h1><a href="/home?v=$int(time.time())"><img src="/static/fanfou.gif" alt="饭否" /></a></h1>

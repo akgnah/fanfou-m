@@ -3,10 +3,8 @@ $def with (me, status)
 $code:
     def get_mentions(item):
         tmp = [item['user']['name']]
-        p = re.compile(r'<[^>]*>(.*?)</a>')
+        p = re.compile(r'class="former">(.*?)</a>')
         for name in p.findall(item['text']):
-            if re.match(r'http[s]?.*', name):
-                continue
             if name in tmp or name == me['name']:
                 continue
             tmp.append(name)
@@ -18,6 +16,7 @@ $code:
 <head>
 <title> 饭否 | 回复$status['user']['name']</title>
 <meta name="viewport" content="width=device-width,initial-scale=1">
+<link href="/static/favicon.ico" rel="shortcut icon">
 <link rel="stylesheet" href="/static/m.css" type="text/css" media="screen" charset="utf-8" /></head>
 <body>
 <h1><a href="/home?v=$int(time.time())"><img src="/static/fanfou.gif" alt="饭否" /></a></h1>

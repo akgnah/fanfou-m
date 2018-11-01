@@ -10,6 +10,7 @@ $code:
 <head>
 <title> 饭否 | 饭否搜索</title>
 <meta name="viewport" content="width=device-width,initial-scale=1">
+<link href="/static/favicon.ico" rel="shortcut icon">
 <link rel="stylesheet" href="/static/m.css" type="text/css" media="screen" charset="utf-8" /></head>
 <body>
 <h1><a href="/home?v=$int(time.time())"><img src="/static/fanfou.gif" alt="饭否" /></a></h1>
@@ -26,7 +27,7 @@ $if notice['direct_messages']:
 $if not query.get('q'):
     <p>热门话题：
     $for trend in notice['trends']:
-        <a href="$:trend['url'].replace('http://fanfou.com', '')"> $:trend['name']</a>
+        <a href="$:re.sub('http[s]?://fanfou.com', '', trend['url'])"> $:trend['name']</a>
     </p>
 $else:
     $if data:

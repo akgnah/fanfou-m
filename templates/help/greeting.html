@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//WAPFORUM//DTD XHTML Mobile 1.0//EN" "http://www.wapforum.org/DTD/xhtml-mobile10.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>帮助 | 小鲸鱼帮助手册</title>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<link href="/static/favicon.ico" rel="shortcut icon">
+<link rel="stylesheet" href="/static/m.css" type="text/css" media="screen" charset="utf-8" /></head>
+<body>
+<h1><a href="/help?topic=list"><img src="/static/setq.png" alt="setq.me" /></a></h1>
+<p>1. 教我讲话 <br/>
+请给我发如下格式私信（Q、A区分大小写，冒号为英文状态下:）<br/>
+Q:hello A:world<br/>
+<span class="t">你的饭香需大于 10 里，饭香计算公式来自<a href="http://spacekid.me/spacefanfou/">太空小孩</a></span>
+</p>
+
+<p>2. 定义回复 <br/>
+请 at 我，格式如下：<br/>
+@Mr.Greeting --def-morn 早安，么么哒~<br/>
+@Mr.Greeting --def-night 亲爱的，晚安~<br/>
+我将会采用此语句回复你，重新设置请发送新内容，删除请发送 --def-morn 或 --def-night
+</p>
+
+<p>3. 设置昵称 <br/>
+请 at 我，格式如下：<br/>
+@Mr.Greeting --def-nick 谢同学<br/>
+我在回复你时会加上昵称，重新设置请发送新内容，删除请发送 --def-nick<br/> 
+<span class="t">若你定义了回复语，回复语优先</span>
+</p>
+
+<p>4. 喜欢/屏蔽语言 <br/>
+请 at 我，格式如下：<br/>
+屏蔽某种语言（en jp zh）<br/>
+@Mr.Greeting --hate-jp<br/>
+设置喜欢的语言<br/>
+@Mr.Greeting --like-en<br/>
+删除设置使用相反命令，如已经屏蔽了日语，取消屏蔽请发送 --like-jp
+</p>
+
+<p>5. 请勿打扰 <br/>
+如果你不想被我打扰，可发送如下消息<br/>
+@Mr.Greeting --block<br/>
+取消屏蔽请再次发送 --block<br/>
+</p>
+
+<p>6. 删除转发 <br/>
+如果你的某消息被我转发了，如想删除请回复该消息<br/>
+@Mr.Greeting --del<br/>
+<span class="t">请一定就我转发你的消息回复，单独@我 不起作用</span>
+</p>
+
+<p>7. 重置设置
+使用如下格式可以重置你的所有设置（不包括你已经教会我的对话）<br/>
+@Mr.Greeting --reset
+</p>
+
+<p>8. 以上命令中 -- 为两个连续的减号</p>
+<div id="ft">&copy; 2017 setq.me/fanfou <a href="/help?topic=donate" target="_blank">赞赏</a></div>
+<p>[$utils.now()]</p>
+</body>
+</html>

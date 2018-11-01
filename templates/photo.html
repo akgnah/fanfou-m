@@ -31,6 +31,7 @@ $code:
 <head>
 <title> 饭否 | $who()的照片</title>
 <meta name="viewport" content="width=device-width,initial-scale=1">
+<link href="/static/favicon.ico" rel="shortcut icon">
 <link rel="stylesheet" href="/static/m.css" type="text/css" media="screen" charset="utf-8" /></head>
 <body>
 <h1><a href="/home?v=$int(time.time())"><img src="/static/fanfou.gif" alt="饭否" /></a></h1>
@@ -39,7 +40,7 @@ $if notice['direct_messages']:
 <h2><a href="/$user['id']">$who()</a> 的照片（$view[0][1]图）</h2>
 <p class="t">第 $(idx+1)  张 / 共 $user['photo_count'] 张</p><p class="b"><a href="/album/$user['id']">返回$who()的所有照片</a></p>
 <p><a href="$next()" class="photo $gif_(item)"><img src="$src_(item)" alt="$src_(item)" /></a></p>
-<p>$:item['text'].replace('http://fanfou.com', '') <br/><span class="t">$utils.format_time(item['created_at'])&nbsp;通过$utils.get_source(item['source'])</span></p>
+<p>$:re.sub(r'(@<a href=")http[s]?://fanfou.com', '\g<1>', item['text']) <br/><span class="t">$utils.format_time(item['created_at'])&nbsp;通过$utils.get_source(item['source'])</span></p>
 $if  nav[2]:
     <p>6<a href="/photo$view[0][0]/$nav[2]" accesskey="6">下一张</a> 
 $if nav[0] and nav[2]: | 

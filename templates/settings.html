@@ -6,6 +6,7 @@ $def with (me, data, blacklist, tail, notice)
 <head>
 <title> 饭否 | 设置</title>
 <meta name="viewport" content="width=device-width,initial-scale=1">
+<link href="/static/favicon.ico" rel="shortcut icon">
 <link rel="stylesheet" href="/static/m.css" type="text/css" media="screen" charset="utf-8" /></head>
 <body>
 <h1><a href="/home?v=$int(time.time())"><img src="/static/fanfou.gif" alt="饭否" /></a></h1>
@@ -19,7 +20,7 @@ $if notice.get('action'):
 <p>头像：<input type="file" name="image" size="20" /></p>
 <p><input type="submit" value="保存" /></p>
 </form>
-<p>小尾巴：$tail | <a href="/authorize?m=:-)" class="p">更改小尾巴</a> | <a href="/share_confirm" class="p">分享小尾巴</a></p>
+<p>小尾巴：$tail | <a href="/authorize?m=change" class="p">更改小尾巴</a> | <a href="/share_confirm" class="p">分享小尾巴</a></p>
 <div id="nav">
 <p class="s">
 0<a href="/home" accesskey="0">首页</a>

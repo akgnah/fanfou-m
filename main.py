@@ -17,8 +17,6 @@ import urls
 import cache
 import models
 
-curdir = os.path.dirname(os.path.abspath(__file__))
-
 
 class Utils:
     def gen_uuid(self, d):
@@ -62,8 +60,8 @@ class Utils:
         return s
 
     def replace_kw(self, s):
-        s = re.sub('<b>([^<]*)</b>', lambda m: '<strong>%s</strong>' % m.groups()[0], s)
-        return s.replace('http://fanfou.com', '')
+        s = re.sub(r'<b>([^<]*)</b>', '<strong>\g<1></strong>', s)
+        return re.sub(r'(@<a href=")http[s]?://fanfou.com', '\g<1>', s)
 
     def get_source(self, s):
         p = re.compile(r'<[^>]*>(.*?)</a>')
@@ -84,7 +82,7 @@ class Utils:
 
     @property
     def client(self):
-        client = fanfou.OAuth(session.consumer, session.token)
+        client = fanfou.OAuth(session.consumer, session.token, fake_https=True)
         fanfou.bound(client)
         return client
 
@@ -95,7 +93,7 @@ class Utils:
 
     def fetch_tail(self, consumer):
         try:
-            client = fanfou.XAuth(consumer, 'username', 'password')
+            client = fanfou.XAuth(consumer, 'username', 'password', fake_https=True)
             body = {'status': 'test %s' % time.time()}
             data = client.request('/statuses/update', 'POST', body).json()
             return self.get_source(data['source']).strip()
@@ -247,32 +245,23 @@ class Utils:
 
     def internalerror(self):
         exc_info = traceback.format_exc()
-        referer = web.ctx.env.get('HTTP_REFERER', web.ctx.home)
+        referer = web.ctx.env.get('HTTP_REFERER', '').replace(web.ctx.home, '')
         if 'HTTP Error 404: Not Found' in exc_info:
-            referer = referer.replace(web.ctx.home, '')
             return web.notfound(render.unrealized(self.me, 404, referer, ''))
         elif 'HTTP Error 401: Unauthorized' in exc_info:
             session.kill()
-            web.setcookie('sid', '', 2592000)
-            return web.internalerror(render.unrealized(self.me, 401, '/authorize', ''))
+            web.setcookie('sid', '', -1)
+            return web.internalerror(render.unrealized({'id': ''}, 401, '/authorize', ''))
         elif 'HTTP Error 400: Bad Request' in exc_info:
             data = self.client.account.rate_limit_status().json()
-            referer = referer.replace(web.ctx.home, 'http://m.fanfou.com')
             reset_time = time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(data['reset_time_in_seconds']))
-            return web.internalerror(render.unrealized(self.me, 400, referer, reset_time))
+            return web.internalerror(render.unrealized({'id': ''}, 400, 'https://m.fanfou.com', reset_time))
         else:
-            referer = referer.replace(web.ctx.home, '')
             models.log.set(referer, exc_info)
             return web.internalerror(render.unrealized(self.me, 500, referer, ''))
 
 
 utils = Utils()
-
-
-class favicon_ico:
-    def GET(self):
-        web.header('Content-Type', 'image/x-icon;charset=utf-8')
-        return open(os.path.join(curdir, 'static', 'favicon.ico'), 'rb').read()
 
 
 class home:
@@ -304,6 +293,7 @@ class msg_reply:
 
     def POST(self, msg_id):
         wi = web.input()
+        session.last = wi.content
         body = {'status': wi.content, 'in_reply_to_status_id': msg_id}
         utils.client.statuses.update(body)
         session.action = '发送成功！'
@@ -317,6 +307,7 @@ class msg_forward:
 
     def POST(self, msg_id):
         wi = web.input()
+        session.last = wi.content
         body = {'status': wi.content, 'repost_status_id': msg_id}
         utils.client.statuses.update(body)
         session.action = '发送成功！'
@@ -330,6 +321,7 @@ class msg_new:
 
     def POST(self, user_id):
         wi = web.input()
+        session.last = wi.content
         body = {'status': wi.content, 'in_reply_to_user_id': user_id}
         utils.client.statuses.update(body)
         session.action = '发送成功！'
@@ -369,10 +361,10 @@ class favorites:
     def GET(self, user_id, page=1):
         body = {'id': user_id, 'count': 15, 'page': page, 'mode': 'lite', 'format': 'html'}
         user = utils.users_show({'id': user_id})
-        if user['visible']:
-            data = utils.client.favorites(body).json()
-            utils.cache(data, 'users')
-        else:
+        try:
+            data = utils.client.favorites(body).json() if user['visible'] else []
+            data and utils.cache(data, 'users')
+        except:
             data = []
         return render.favorites(utils.me, user, data, int(page), utils.notice)
 
@@ -391,8 +383,8 @@ class friend_acceptadd:
 
     def POST(self, user_id):
         body = {'id': user_id}
+        utils.friend_add(body)
         utils.client.friendships.accept(body)
-        utils.client.friendships.create(body)
         if utils.notice['friend_requests']:
             raise web.seeother('/friend.request')
         else:
@@ -464,7 +456,10 @@ class friends:
         user_id = user_id or utils.me['id']
         body = {'id': user_id, 'mode': 'lite', 'count': 50, 'page': page}
         user = utils.users_show({'id': user_id})
-        data = utils.client.users.friends(body).json() if user['visible'] else []
+        try:
+            data = utils.client.users.friends(body).json() if user['visible'] else []
+        except:
+            data = []
         return render.friends(utils.me, user, data, int(page), utils.notice)
 
 
@@ -473,7 +468,10 @@ class followers:
         user_id = user_id or utils.me['id']
         body = {'id': user_id, 'mode': 'lite', 'count': 50, 'page': page}
         user = utils.users_show({'id': user_id})
-        data = utils.client.users.followers(body).json() if user['visible'] else []
+        try:
+            data = utils.client.users.followers(body).json() if user['visible'] else []
+        except:
+            data = []
         return render.followers(utils.me, user, data, int(page), utils.notice)
 
 
@@ -582,7 +580,10 @@ class album:
         user_id = user_id or utils.me['id']
         body = {'id': user_id, 'count': 10, 'mode': 'lite', 'page': int(page)}
         user = utils.users_show({'id': user_id})
-        data = utils.album(body) if user['visible'] else []
+        try:
+            data = utils.album(body) if user['visible'] else []
+        except:
+            data = []
         return render.album(utils.me, user, data, int(page), utils.notice)
 
 
@@ -609,7 +610,8 @@ class photo_upload:
 
     def POST(self):
         wi = web.input(photo={})
-        if wi.get('desc') == session.get('last'):
+        desc = wi.get('desc') or u'上传了新照片'
+        if desc == session.get('last'):
             session.action = '请勿发重复消息！'
             raise web.seeother('/photo.upload')
         if not wi.photo.filename:
@@ -619,7 +621,6 @@ class photo_upload:
         if file_type not in ['image/gif', 'image/jpeg', 'image/png', 'image/x-png']:
             session.action = '照片格式错误'
             raise web.seeother('/photo.upload')
-        desc = wi.get('desc') or u'上传了新照片'
         args = {'photo': wi.photo.filename, 'status': desc}
         body, headers = fanfou.pack_image(args, binary=wi.photo.file.read())
         utils.client.photos.upload(body, headers)
@@ -708,36 +709,36 @@ class space:
         if int(page) == 1:
             utils.refresh_cache('users_profile', user_id)
         user = utils.users_show({'id': user_id})
-        if user['visible']:
+        try:
             body = {'id': user_id, 'page': page, 'format': 'html', 'mode': 'lite', 'count': 15}
-            data = utils.client.statuses.user_timeline(body).json()
+            data = utils.client.statuses.user_timeline(body).json() if user['visible'] else None
             utils.cache(data, 'users,statuses')
             return render.space(utils.me, user, data, int(page), utils.notice)
-        else:
+        except:
             return render.space_lock(utils.me, user, utils.notice)
 
 
 class userview:
     def GET(self, user_id, page=1):
         user = utils.users_show({'id': user_id})
-        if user['visible']:
+        try:
             body = {'id': user_id, 'page': page, 'format': 'html', 'mode': 'lite', 'count': 15}
-            data = utils.client.statuses.home_timeline(body).json()
+            data = utils.client.statuses.home_timeline(body).json() if user['visible'] else None
             utils.cache(data, 'users,statuses')
             return render.userview(utils.me, user, data, int(page), utils.notice)
-        else:
+        except:
             return render.space_lock(utils.me, user, utils.notice)
 
 
 class dialogue:
     def GET(self, user_id, page=1):
         user = utils.users_show({'id': user_id})
-        if user['visible']:
+        try:
             body = {'id': user_id, 'page': page, 'format': 'html', 'mode': 'lite', 'count': 15}
-            data = utils.client.direct_messages.conversation(body).json()
+            data = utils.client.direct_messages.conversation(body).json() if user['visible'] else None
             utils.cache(data, 'privatemsg')
             return render.dialogue(utils.me, user, data, int(page), utils.notice)
-        else:
+        except:
             return render.space_lock(utils.me, user, utils.notice)
 
 
@@ -767,48 +768,49 @@ class settings:
             models.conf.set(utils.me['id'], wi.blacklist.split(';'))
 
         user = utils.users_show({'id': utils.me['id']})
+        user.update(body)
         session.action = '保存成功！'
-        return render.settings(utils.me, user, wi.blacklist, utils.tail(), utils.notice)
+        raise web.seeother('/settings')
 
 
 class share_confirm:
     def GET(self):
         cid = utils.gen_uuid(session.consumer)
+        session.share_confirm = True
         raise web.seeother('/share?cid=%s' % cid)
 
 
 class share:
     def GET(self):
-        referer = web.ctx.env.get('HTTP_REFERER', '')
-        http_host = web.ctx.env.get('HTTP_HOST')
         cid = web.input().get('cid').strip('/')
-        if http_host in referer:
+        if session.get('share_confirm'):
+            session.share_confirm = None
             http_code = 200
         else:
             data = models.consumer.get(cid)
             try:
                 consumer = data['consumer']
-                callback = 'http://%s/callback' % http_host
+                callback = '{0}{1}'.format(web.ctx.home, '/callback')
                 client = fanfou.OAuth(consumer, callback=callback)
                 session.consumer = consumer
                 session.request_token = client.request_token()
                 raise web.seeother(client.authorize_url)
             except urllib2.HTTPError:
                 http_code = 404 if data else 403
-        return render.share(cid, http_code, http_host)
+        return render.share(cid, http_code, web.ctx.home)
 
 
 class autologin_confirm:
     def GET(self):
         sid = web.cookies().get('sid')
+        session.autologin_confirm = True
         raise web.seeother('/autologin?sid=%s' % sid)
 
 
 class autologin:
     def GET(self):
-        referer = web.ctx.env.get('HTTP_REFERER', '')
-        http_host = web.ctx.env.get('HTTP_HOST')
-        if http_host in referer:
+        if session.get('autologin_confirm'):
+            session.autologin_confirm = None
             return render.autologin()
         else:
             session.kill()
@@ -816,9 +818,9 @@ class autologin:
             data = models.token.get(sid)
             try:
                 utils.token_verify(data)     # Verify the token
-                web.setcookie('sid', sid, 2592000)
+                web.setcookie('sid', sid, 604800)
             except:
-                web.setcookie('sid', '', 2592000)
+                web.setcookie('sid', '', -1)
                 return render.authorize('书签登录失败，请重新验证。')
             raise web.seeother('/home')
 
@@ -826,41 +828,42 @@ class autologin:
 class logout:
     def GET(self):
         session.kill()
-        web.setcookie('sid', '', 2592000)
+        web.setcookie('sid', '', -1)
         return render.authorize('你已经安全退出。')
 
 
 class authorize:
     def GET(self):
         sid = web.cookies().get('sid')
-        if web.input().get('m'):
+        mode = web.input().get('m')
+        if mode:
             session.kill()
-            web.setcookie('sid', '', 2592000)
-            return render.authorize_d(None)
+            # web.setcookie('sid', '', -1)
+            return render.authorize(mode=mode)
         if sid:
             data = models.token.get(sid)
             try:
                 utils.token_verify(data)
+                web.setcookie('sid', sid, 604800)
             except:
                 return render.authorize('Token 已失效，请重新认证。')
             raise web.seeother('/home')
         else:
-            return render.authorize(None)
+            return render.authorize()
 
     def POST(self):
         wi = web.input()
-        http_host = web.ctx.env.get('HTTP_HOST')
-        callback = 'http://%s/callback' % http_host
+        callback = '{0}{1}'.format(web.ctx.home, '/callback')
         if wi.get('user-defined'):
-            consumer = {'key': wi.key, 'secret': wi.secret}    # from authorize_d.html
+            consumer = {'key': wi.key, 'secret': wi.secret}    # custom
         else:
-            consumer = models.consumer.get(wi.cid)['consumer']    # from authorize.html
+            consumer = models.consumer.get(wi.cid)['consumer']
         try:
-            client = fanfou.OAuth(consumer, callback=callback)
+            client = fanfou.OAuth(consumer, callback=callback, fake_https=True)
             session.consumer = consumer
             session.request_token = client.request_token()
         except:
-            return render.authorize_d('请填写正确的 Consumer。')
+            return render.authorize('请填写正确的 Consumer。')
         raise web.seeother(client.authorize_url)
 
 
@@ -877,7 +880,7 @@ class callback:
             models.token.set(sid, cid, token)
             session.token = token
             session.request_token = None
-            web.setcookie('sid', sid, 2592000)
+            web.setcookie('sid', sid, 604800)
             raise web.seeother('/home')
         else:
             raise web.seeother('/authorize')
@@ -885,20 +888,21 @@ class callback:
 
 class help:
     def GET(self):
-        topic = web.input().get('topic')
+        topic = web.input().get('topic') or 'list'
         try:
-            return web.template.frender('templates/help_%s.html' % topic, globals=globals())()
+            return web.template.frender('templates/help/%s.html' % topic, globals=globals())()
         except:
-            return web.template.frender('templates/help_notfound.html', globals=globals())()
+            return web.template.frender('templates/help/notfound.html', globals=globals())()
 
 
-web.config.debug = True
+web.config.debug = False
 app = web.application(urls.urls, globals())
 
 session = web.session.Session(app, models.session)
 app.notfound = utils.notfound
 app.internalerror = utils.internalerror
 app.add_processor(web.loadhook(utils.authorize))
+curdir = os.path.dirname(os.path.abspath(__file__))
 render = web.template.render(os.path.join(curdir, 'templates'), globals=globals())
 
 if __name__ == '__main__':

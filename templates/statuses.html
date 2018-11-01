@@ -6,6 +6,7 @@ $def with (me, item, notice)
 <head>
 <title> 饭否 | 迷你博客 随时随地记录与分享</title>
 <meta name="viewport" content="width=device-width,initial-scale=1">
+<link href="/static/favicon.ico" rel="shortcut icon">
 <link rel="stylesheet" href="/static/m.css" type="text/css" media="screen" charset="utf-8" /></head>
 <body>
 <h1><a href="/home?v=$int(time.time())"><img src="/static/fanfou.gif" alt="饭否" /></a></h1>
@@ -13,7 +14,7 @@ $if notice['direct_messages']:
     <p class="n"><a href="/privatemsg">你有 $notice['direct_messages'] 条新私信</a></p>
 <p>
 <a href="/$item['user']['id']" class="p">
-$item['user']['name']</a> $:item['text'].replace('http://fanfou.com', '')
+$item['user']['name']</a> $:re.sub(r'(@<a href=")http[s]?://fanfou.com', '\g<1>', item['text'])
 $if item.get('photo'): <a href="/photo.normal/$utils.get_msg_id(item)" alt="[图]" class="photo $utils.gif(item)"><img src="$item['photo']['thumburl']" /></a>
 <br/><span class="t">$utils.format_time(item['created_at'])&nbsp;通过$utils.get_source(item['source'])</span>
 $if item.get('repost_status_id'):

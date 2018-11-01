@@ -6,6 +6,7 @@ $def with (me, data, page, notice)
 <head>
 <title> 饭否 | 欢迎你，$me['name']</title>
 <meta name="viewport" content="width=device-width,initial-scale=1">
+<link href="/static/favicon.ico" rel="shortcut icon">
 <link rel="stylesheet" href="/static/m.css" type="text/css" media="screen" charset="utf-8" /></head>
 <body>
 <h1><a href="/home?v=$int(time.time())"><img src="/static/fanfou.gif" alt="饭否" /></a></h1>
@@ -28,10 +29,10 @@ $if notice.get('direct_messages'):
 $else:
     <a href="/privatemsg">私信</a></h2>
 $for item in data:
-    $if utils.blocked(item['text']): $continue
+    $if utils.blocked(item['text']) or utils.blocked(item['user']['name']): $continue
     <p>
     <a href="/$item['user']['id']" class="p">
-    $item['user']['name']</a> $:item['text'].replace('http://fanfou.com', '')
+    $item['user']['name']</a> $:re.sub(r'(@<a href=")http[s]?://fanfou.com', '\g<1>', item['text'])
     $if item.get('photo'): <a href="/photo.normal/$utils.get_msg_id(item)" alt="[图]" class="photo $utils.gif(item)"><img src="$item['photo']['thumburl']" /></a>
     <br/><span class="t">$utils.format_time(item['created_at'])&nbsp;通过$utils.get_source(item['source'])</span>
     $if item.get('repost_status_id'):
@@ -57,7 +58,7 @@ $if page > 1:
 </p>
 <p>热门话题：
 $for trend in notice['trends']:
-    <a href="$:trend['url'].replace('http://fanfou.com', '')"> $:trend['name']</a>
+    <a href="$:re.sub('http[s]?://fanfou.com', '', trend['url'])"> $:trend['name']</a>
 </p>
 <div id="nav">
 <p class="s">
