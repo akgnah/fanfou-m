@@ -50,7 +50,7 @@ $for item in data:
         <span class="a"><a href="/msg.favorite.add/$item['id']">收藏</a></span>
     </p>
 <p>
-$if len(data) >= 15:
+$if page * 15 < user['statuses_count']:
     6<a href="/$user['id']/p.$(page+1)" accesskey="6">下页</a>
     $if page > 1: |
 $if page > 1:
