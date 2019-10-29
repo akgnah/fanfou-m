@@ -1,5 +1,10 @@
 $def with (me, data, page, notice)
 
+$code:
+    def gender(user):
+        sex = { u'男': '他', u'女': '她'}
+        return sex.get(user['gender'], '他')
+
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE html PUBLIC "-//WAPFORUM//DTD XHTML Mobile 1.0//EN" "http://www.wapforum.org/DTD/xhtml-mobile10.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
@@ -19,7 +24,7 @@ $for item in data:
     <a href="/$item['id']"><img src="$item['profile_image_url']" alt="$item['id']" /></a>
     <a href="/$item['id']">$item['name']</a>
     <span class="a">(
-    $if not item['following']: <a href="/friend.acceptadd/$item['id']">接受请求并关注他</a> | 
+    $if not item['following']: <a href="/friend.acceptadd/$item['id']">接受请求并关注$gender(item)</a> | 
     <a href="/friend.accept/$item['id']">接受请求</a> | 
     <a href="/friend.deny/$item['id']">忽略请求</a>)</span>
     </li>

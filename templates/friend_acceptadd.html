@@ -1,5 +1,10 @@
 $def with (me, user)
 
+$code:
+    def gender():
+        sex = { u'男': '他', u'女': '她'}
+        return sex.get(user['gender'], '他')
+
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE html PUBLIC "-//WAPFORUM//DTD XHTML Mobile 1.0//EN" "http://www.wapforum.org/DTD/xhtml-mobile10.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
@@ -10,7 +15,7 @@ $def with (me, user)
 <link rel="stylesheet" href="/static/m.css" type="text/css" media="screen" charset="utf-8" /></head>
 <body>
 <h1><a href="/home?v=$int(time.time())"><img src="/static/fanfou.gif" alt="饭否" /></a></h1>
-<h2>你确定要接受$user['name']的关注请求，并关注他吗？</h2>
+<h2>你确定要接受$user['name']的关注请求，并关注$gender()吗？</h2>
 <form method="post" action="/friend.acceptadd/$user['id']">
 <p><input type="submit" value="确定" /></p>
 </form>
